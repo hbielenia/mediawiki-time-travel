@@ -1,0 +1,22 @@
+{
+	"name": "MediaWiki Time Travel",
+	"version": "0.1.0",
+	"description": "Browse MediaWiki at a given date in the past.",
+	"permissions": [
+		"declarativeContent",
+		"tabs",
+		"webRequest",
+		"webRequestBlocking",
+		"http://*/*",
+		"https://*/*"
+	],
+	"background": {
+		"scripts": [ "background.js" ],
+		"persistent": true
+	},
+	"page_action": {
+		"default_title": "MediaWiki Time Travel",
+		"default_popup": "popup.html"
+	},
+	"manifest_version": 2
+}
