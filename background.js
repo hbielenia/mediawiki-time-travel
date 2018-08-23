@@ -82,8 +82,49 @@ var getApiUrlAsync = function(url, callback) {
 	req.send(null);
 };
 
+// Old url retrieval function - calls passed API url to find old id.
+// It's used in code as partial: getOldUrl.bind(null, apiUrl)
+// but can be used as normal function if needed.
+var getOldUrl = function(date, apiUrl, url) {
+	let apiReq = new XMLHttpRequest();
+
+	let pageTitle = url.pathname.substring(1);
+	let params = new URLSearchParams();
+	params.append('format', 'json');
+	params.append('action', 'query');
+	params.append('prop', 'revisions');
+	params.append('titles', encodeURIComponent(pageTitle));
+	params.append('rvprop', 'ids');
+	params.append('rvlimit', '1');
+	params.append('rvstart', date + 'T23:59:59');
+	params.append('rvdir', 'older');
+	// We have to use synchronous XHR because returning from this function
+	// unblocks request. Let's hope Chrome will finally adopt Promises
+	// in extension APIs.
+	apiReq.open('GET', apiUrl + '?' + params.toString(), false);
+	apiReq.send(null);
+	if (apiReq.status == 200) {
+		let apiRes = JSON.parse(apiReq.responseText);
+		let pageId = Object.keys(apiRes['query']['pages'])[0];
+		let revisions = apiRes['query']['pages'][pageId]['revisions']
+		// Only redirect if there are older revisions
+		if (revisions) {
+			let oldUrlParams = new URLSearchParams(url.searchParams);
+			oldUrlParams.append('oldid', revisions[0]['revid']);
+			let oldUrl = url.origin
+				+ url.pathname
+				+ '?'
+				+ oldUrlParams.toString()
+			;
+			return oldUrl;
+		};
+	} else {
+		console.error('API response invalid.');
+	};
+}
+
 // Construct webRequest.onBeforeHeadersSent listener
-var listenerFactory = function(apiUrl, date) {
+var listenerFactory = function(oldUrlFunc) {
 	let listener = function(details) {
 		let response = {
 			redirectUrl: details.url,
@@ -94,41 +135,10 @@ var listenerFactory = function(apiUrl, date) {
 			return response;
 		}
 
-		let apiReq = new XMLHttpRequest();
-
-		let pageTitle = url.pathname.substring(1);
-		let params = new URLSearchParams();
-		params.append('format', 'json');
-		params.append('action', 'query');
-		params.append('prop', 'revisions');
-		params.append('titles', encodeURIComponent(pageTitle));
-		params.append('rvprop', 'ids');
-		params.append('rvlimit', '1');
-		params.append('rvstart', date + 'T23:59:59');
-		params.append('rvdir', 'older');
-		// We have to use synchronous XHR because returning from this function
-		// unblocks request. Let's hope Chrome will finally adopt Promises
-		// in extension APIs.
-		apiReq.open('GET', apiUrl + '?' + params.toString(), false);
-		apiReq.send(null);
-		if (apiReq.status == 200) {
-			let apiRes = JSON.parse(apiReq.responseText);
-			let pageId = Object.keys(apiRes['query']['pages'])[0];
-			let revisions = apiRes['query']['pages'][pageId]['revisions']
-			// Only redirect if there are older revisions
-			if (revisions) {
-				let redirectParams = new URLSearchParams(url.searchParams);
-				redirectParams.append('oldid', revisions[0]['revid']);
-				let redirect = url.origin
-					+ url.pathname
-					+ '?'
-					+ redirectParams.toString()
-				;
-				response['redirectUrl'] = redirect;
-			};
-		} else {
-			console.error('API response invalid.');
-		};
+		let oldUrl = oldUrlFunc(url);
+		if (oldUrl) {
+			response['redirectUrl'] = redirect;
+		}
 
 		return response;
 	};
@@ -150,11 +160,20 @@ var setRedirectListenerAsync = function(config) {
 		filters.push(schema + '://' + config.hostname + '/*');
 	};
 
+	// Callback for API url retrieval, since it's asynchronous.
 	let apiUrlCallback = function(apiUrl) {
+		// We attempt to change page that user already has opened.
+		let oldUrlFunc = getOldUrl.bind(null, config.date, apiUrl);
+		let oldUrl = oldUrlFunc(new URL(config.url));
+		if (oldUrl) {
+			chrome.tabs.update(config.tabId, {
+				url: oldUrl,
+			});
+		};
 		delete config.url;
 
-		let listener = listenerFactory(apiUrl, config.date);
-
+		// Use old url partial with listener factory
+		let listener = listenerFactory(oldUrlFunc);
 		chrome.webRequest.onBeforeRequest.addListener(
 			listener,
 			{
