@@ -181,6 +181,18 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 			sendResponse(redirectConf);
 		} else if (message.unsetRedirect) {
 			setRedirectListenerAsync(null);
+			if (redirectConf.tabId) {
+				chrome.tabs.get(redirectConf.tabId, function(tab) {
+					let tabUrl = new URL(tab.url);
+					let params = new URLSearchParams(tabUrl.searchParams);
+					if (params.has('oldid')) {
+						params.delete('oldid');
+						chrome.tabs.update(tab.id, {
+							url: tabUrl.origin + tabUrl.pathname + '?' + params.toString(),
+						});
+					};
+				});
+			};
 		} else if (message.setRedirect) {
 			Object.assign(redirectConf, message.setRedirect);
 			setRedirectListenerAsync(redirectConf);
