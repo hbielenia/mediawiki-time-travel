@@ -28,11 +28,17 @@ Extension becomes active when you navigate to MediaWiki page, ie. Wikipedia.
 Detection can sometimes fail - if you encounter such a case, please report it
 as issue_.
 
-=======
-License
-=======
+=========
+Copyright
+=========
 
-See ``LICENSE`` file.
+This software is distributed under the terms of GNU General Public License 3.0.
+See ``LICENSE`` file for details.
+
+Icons are derivative work of:
+
+- MediaWiki logo by Klapaucjusz, available under public domain; `link <https://commons.wikimedia.org/wiki/File:MediaWiki-smaller-logo.png>`_
+- Clock icon provided with Oxygen icon set, available under GNU Lesser General Public License 3.0 or later; `link <https://github.com/KDE/oxygen-icons>`_
 
 .. _releases: https://github.com/hbielenia/mediawiki-time-travel/releases
 .. _issue: https://github.com/hbielenia/mediawiki-time-travel/issues
