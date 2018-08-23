@@ -8,16 +8,10 @@ to browse given MediaWiki site as it appeared at a given date in the past.
 Supported browsers
 ==================
 
-MediaWiki Time Travel is tested under following browsers:
-
-- Google Chrome 68.0.3440.106
-- Opera 55.0
-
-It should work without problem in newer versions and in reasonably older
-versions, too. Other Chromium-based browsers (including Chromium itself)
-probably work as well, but there's just too many of them to test all.
-
-MediaWiki Time Travel is known NOT to work under following browsers:
+MediaWiki Time Travel is developed and tested under Opera 55.0. It should work
+without problem in newer versions and in reasonably older versions, too.
+Other Chromium-based browsers (including Chromium itself)
+are known to work as well, except:
 
 - Vivaldi 1.15.1147.64 (extension doesn't appear in toolbar)
 
