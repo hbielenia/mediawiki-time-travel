@@ -2,6 +2,7 @@
 	"name": "MediaWiki Time Travel",
 	"version": "1.0.1",
 	"description": "Browse MediaWiki at a given date in the past.",
+	"homepage_url": "https://github.com/hbielenia/mediawiki-time-travel",
 	"permissions": [
 		"declarativeContent",
 		"tabs",
