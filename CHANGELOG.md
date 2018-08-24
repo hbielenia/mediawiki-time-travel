@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.0.1] - 2018-08-24
+### Fixed
+- Extension will no longer error out on protocol relative RSD URLs.
+- Page titles anchored on non-root path (ie. /wiki/Page) are now supported.
+
 ## [1.0.0] - 2018-08-23
 ### Added
 - This changelog.
