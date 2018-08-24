@@ -97,7 +97,7 @@ var getApiUrlAsync = function(url, callback) {
 var getOldUrl = function(date, apiUrl, url) {
 	let apiReq = new XMLHttpRequest();
 
-	let pageTitle = url.pathname.substring(1);
+	let pageTitle = url.pathname.split('/').pop();
 	let params = new URLSearchParams();
 	params.append('format', 'json');
 	params.append('action', 'query');
