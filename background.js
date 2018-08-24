@@ -66,17 +66,26 @@ var getApiUrlAsync = function(url, callback) {
 		let editLinks = xhr.responseXML.querySelectorAll('link[rel="EditURI"]');
 		if (editLinks.length < 1) {
 			handleError(url + ' has no API urls.');
+			return false;
 		};
 		if (editLinks.length > 1) {
 			console.warn(
 				url + ' has more than 1 API urls. Only the first one will be used.');
 		};
+
+		// Detect and handle protocol relative URL.
+		let rsdUrl = editLinks[0].getAttribute('href');
+		if (rsdUrl.indexOf('//') === 0) {
+			let urlObj = new URL(url);
+			rsdUrl = urlObj.protocol + rsdUrl;
+		};
+
 		let newReq = new XMLHttpRequest();
-		newReq.open('GET', editLinks[0].getAttribute('href'), true);
+		newReq.open('GET', rsdUrl, true);
 		newReq.onreadystatechange = xhrHandlerFactory(newReq, function(newXhr) {
 			let api = newXhr.responseXML.querySelectorAll('api[name="MediaWiki"]')[0];
 			callback(api.getAttribute('apiLink'));
-		}, 'API definition couldn\'t be retrieved');
+		}, 'API definition couldn\'t be retrieved.');
 		newReq.send(null);
 	});
 	req.send(null);
