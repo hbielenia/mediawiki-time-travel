@@ -146,7 +146,7 @@ var listenerFactory = function(oldUrlFunc) {
 
 		let oldUrl = oldUrlFunc(url);
 		if (oldUrl) {
-			response['redirectUrl'] = redirect;
+			response['redirectUrl'] = oldUrl;
 		}
 
 		return response;
