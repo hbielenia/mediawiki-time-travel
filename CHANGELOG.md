@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.0.2] - 2018-08-25
+### Fixed
+- Removed regression that prevented redirection from working.
+
 ## [1.0.1] - 2018-08-24
 ### Fixed
 - Extension will no longer error out on protocol relative RSD URLs.
